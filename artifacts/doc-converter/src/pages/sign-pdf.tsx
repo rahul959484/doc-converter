@@ -133,7 +133,7 @@ export default function SignPdf() {
 
   const download = () => {
     if (!result || !file) return;
-    const blob = new Blob([result], { type: "application/pdf" });
+    const blob = new Blob([result.buffer as ArrayBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

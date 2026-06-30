@@ -92,7 +92,7 @@ export default function SplitPdf() {
 
   const downloadAll = () => {
     results.forEach(r => {
-      const blob = new Blob([r.bytes], { type: "application/pdf" });
+      const blob = new Blob([r.bytes.buffer as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -103,7 +103,7 @@ export default function SplitPdf() {
   };
 
   const downloadOne = (r: SplitResult) => {
-    const blob = new Blob([r.bytes], { type: "application/pdf" });
+    const blob = new Blob([r.bytes.buffer as ArrayBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

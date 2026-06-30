@@ -33,10 +33,9 @@ export default function UnlockPdf() {
     setIsProcessing(true); setError(null); setResult(null);
     try {
       const ab = await file.arrayBuffer();
-      const doc = await PDFDocument.load(ab, {
-        password: password || undefined,
-        ignoreEncryption: !password,
-      });
+      const loadOpts: Record<string, unknown> = { ignoreEncryption: !password };
+      if (password) loadOpts.password = password;
+      const doc = await PDFDocument.load(ab, loadOpts as Parameters<typeof PDFDocument.load>[1]);
       const bytes = await doc.save();
       setResult(bytes);
     } catch (e: unknown) {
@@ -53,7 +52,7 @@ export default function UnlockPdf() {
 
   const download = () => {
     if (!result || !file) return;
-    const blob = new Blob([result], { type: "application/pdf" });
+    const blob = new Blob([result.buffer as ArrayBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

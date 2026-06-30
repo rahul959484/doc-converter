@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument, rgb, StandardFonts, degrees } from "pdf-lib";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -54,7 +54,7 @@ export default function WatermarkPdf() {
           font,
           color: rgb(0.5, 0.5, 0.5),
           opacity,
-          rotate: { type: "degrees" as const, angle },
+          rotate: degrees(angle),
         });
       }
 
@@ -68,7 +68,7 @@ export default function WatermarkPdf() {
 
   const download = () => {
     if (!result || !file) return;
-    const blob = new Blob([result], { type: "application/pdf" });
+    const blob = new Blob([result.buffer as ArrayBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
