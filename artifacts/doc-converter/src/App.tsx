@@ -21,6 +21,12 @@ import UnlockPdf from "@/pages/unlock-pdf";
 import SignPdf from "@/pages/sign-pdf";
 import RepairPdf from "@/pages/repair-pdf";
 import RemovePages from "@/pages/remove-pages";
+import WordToPdf from "@/pages/word-to-pdf";
+import ExcelToPdf from "@/pages/excel-to-pdf";
+import PowerpointToPdf from "@/pages/powerpoint-to-pdf";
+import PdfToWord from "@/pages/pdf-to-word";
+import PdfToExcel from "@/pages/pdf-to-excel";
+import PdfToPptx from "@/pages/pdf-to-pptx";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +36,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/home" component={Home} />
+        {/* Existing tools */}
         <Route path="/image-to-pdf" component={ImageToPdf} />
         <Route path="/compress-image" component={CompressImage} />
         <Route path="/compress-pdf" component={CompressPdf} />
@@ -45,6 +52,13 @@ function Router() {
         <Route path="/sign-pdf" component={SignPdf} />
         <Route path="/repair-pdf" component={RepairPdf} />
         <Route path="/remove-pages" component={RemovePages} />
+        {/* New conversion tools */}
+        <Route path="/word-to-pdf" component={WordToPdf} />
+        <Route path="/excel-to-pdf" component={ExcelToPdf} />
+        <Route path="/powerpoint-to-pdf" component={PowerpointToPdf} />
+        <Route path="/pdf-to-word" component={PdfToWord} />
+        <Route path="/pdf-to-excel" component={PdfToExcel} />
+        <Route path="/pdf-to-pptx" component={PdfToPptx} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
