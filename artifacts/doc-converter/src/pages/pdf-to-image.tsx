@@ -84,83 +84,97 @@ export default function PdfToImage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">PDF to Images</h2>
-        <p className="text-muted-foreground mt-1">Convert every page of a PDF into a high-quality image file.</p>
+      <div className="space-y-2">
+        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 mb-1">
+          Convert
+        </div>
+        <h2 className="text-3xl font-bold tracking-tight">PDF to Images</h2>
+        <p className="text-muted-foreground text-lg">Convert every page of a PDF into a high-quality image file.</p>
       </div>
 
       <AnimatePresence mode="wait">
         {!file ? (
           <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Card
-              className={cn("p-12 border-dashed transition-all duration-200 group cursor-pointer", isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "hover:border-primary/50 hover:bg-muted/50")}
+              className={cn(
+                "p-14 border-2 border-dashed transition-all duration-300 group relative overflow-hidden bg-card/50",
+                isDragging ? "border-indigo-500 bg-indigo-500/5 scale-[1.02] shadow-xl shadow-indigo-500/10" : "border-border hover:border-indigo-500/50 hover:bg-muted/50 hover:shadow-lg cursor-pointer"
+              )}
               onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={e => { e.preventDefault(); setIsDragging(false); }}
               onDrop={onDrop}
               onClick={() => fileInputRef.current?.click()}
             >
-              <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                <div className={cn("p-4 rounded-full transition-colors duration-200", isDragging ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground")}>
-                  <ImageIcon className="h-8 w-8" />
+              {isDragging && <div className="absolute inset-0 bg-indigo-500/5 blur-3xl rounded-full" />}
+              <div className="flex flex-col items-center justify-center space-y-5 text-center relative z-10">
+                <div className={cn(
+                  "p-5 rounded-2xl transition-all duration-300 shadow-sm",
+                  isDragging ? "bg-indigo-500 text-white scale-110 shadow-indigo-500/25 shadow-lg" : "bg-background border shadow-sm text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-indigo-500/25"
+                )}>
+                  <ImageIcon className="h-10 w-10" />
                 </div>
-                <div>
-                  <p className="font-medium text-lg">{isDragging ? "Drop PDF here" : "Click or drag a PDF to upload"}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Each page becomes a separate image</p>
+                <div className="space-y-1.5">
+                  <p className="font-semibold text-xl">{isDragging ? "Drop PDF here" : "Click or drag a PDF to upload"}</p>
+                  <p className="text-sm text-muted-foreground/80 font-medium">Each page becomes a separate image</p>
                 </div>
-                <input ref={fileInputRef} type="file" className="hidden" accept="application/pdf" onChange={handleFileChange} data-testid="input-file" />
+                <input ref={fileInputRef} type="file" className="hidden" accept="application/pdf" onChange={handleFileChange} />
               </div>
             </Card>
           </motion.div>
         ) : (
-          <motion.div key="options" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <Card className="p-5 flex flex-col sm:flex-row sm:items-center gap-4 border-primary/20 bg-primary/5">
-              <div className="h-12 w-12 bg-primary/20 rounded flex items-center justify-center shrink-0">
-                <FileText className="h-6 w-6 text-primary" />
+          <motion.div key="options" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 bg-card p-6 md:p-8 rounded-2xl border shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5 p-4 rounded-xl border bg-muted/30">
+              <div className="h-14 w-14 bg-indigo-500/10 rounded-xl flex items-center justify-center shrink-0 border border-indigo-500/20">
+                <FileText className="h-7 w-7 text-indigo-600 dark:text-indigo-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{file.name}</p>
-                <p className="text-sm text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <p className="font-bold truncate text-lg text-foreground">{file.name}</p>
+                <p className="text-sm font-medium text-muted-foreground mt-0.5">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
               </div>
-              <Button variant="outline" onClick={() => { setFile(null); setResults([]); }} className="shrink-0">Change File</Button>
-            </Card>
+              <Button variant="outline" onClick={() => { setFile(null); setResults([]); }} className="shrink-0 font-semibold border-dashed">Change File</Button>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <Label className="text-base font-medium">Output Format</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4 border-t">
+              <div className="space-y-4">
+                <Label className="text-lg font-bold">Output Format</Label>
                 <Select value={format} onValueChange={(v) => setFormat(v as ImageFormat)}>
-                  <SelectTrigger data-testid="select-format"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-14 text-base font-semibold border-2 focus:ring-indigo-500"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="image/png">PNG (lossless)</SelectItem>
-                    <SelectItem value="image/jpeg">JPG (smaller file)</SelectItem>
+                    <SelectItem value="image/png" className="py-2.5 font-medium">PNG (lossless)</SelectItem>
+                    <SelectItem value="image/jpeg" className="py-2.5 font-medium">JPG (smaller file)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-base font-medium">Resolution — {scale}x ({Math.round(scale * 72)} DPI)</Label>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-lg font-bold">Resolution</Label>
+                  <span className="font-bold text-indigo-600 dark:text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded text-sm">{scale}x ({Math.round(scale * 72)} DPI)</span>
+                </div>
                 <Slider
                   value={[scale]}
                   onValueChange={([v]) => setScale(v)}
                   min={1}
                   max={4}
                   step={0.5}
-                  className="pt-2"
-                  data-testid="slider-scale"
+                  className="py-4 cursor-pointer"
                 />
-                <p className="text-xs text-muted-foreground">Higher = sharper, larger file. 2x is ideal for most uses.</p>
+                <p className="text-xs font-medium text-muted-foreground">Higher = sharper, larger file. 2x is ideal for most uses.</p>
               </div>
             </div>
 
             {isProcessing && progress && (
-              <Card className="p-5">
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">Converting pages...</span>
-                    <span className="text-muted-foreground">{progress.current} / {progress.total}</span>
+              <Card className="p-6 border-indigo-200 bg-indigo-50/50 dark:bg-indigo-950/20 dark:border-indigo-800/50">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-bold text-indigo-800 dark:text-indigo-200 flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Converting pages...
+                    </span>
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">{progress.current} / {progress.total}</span>
                   </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full bg-primary rounded-full"
+                      className="h-full bg-indigo-500 rounded-full"
                       initial={{ width: 0 }}
                       animate={{ width: `${(progress.current / progress.total) * 100}%` }}
                       transition={{ duration: 0.3 }}
@@ -171,41 +185,46 @@ export default function PdfToImage() {
             )}
 
             {results.length > 0 ? (
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
-                <Card className="p-5 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 bg-emerald-500 h-full" />
-                  <div className="flex items-center justify-between pl-4">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                      <p className="font-semibold text-emerald-900 dark:text-emerald-300">{results.length} image{results.length !== 1 ? "s" : ""} ready</p>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="pt-6 border-t mt-6 space-y-6">
+                <Card className="p-8 bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/40 dark:to-teal-900/20 border-emerald-200/50 dark:border-emerald-800/50 relative overflow-hidden shadow-sm">
+                  <div className="absolute top-0 right-0 p-8 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-2xl -mr-4 -mt-4" />
+                  <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center shadow-inner">
+                        <CheckCircle2 className="h-6 w-6" />
+                      </div>
+                      <p className="font-bold text-xl text-emerald-900 dark:text-emerald-100">{results.length} image{results.length !== 1 ? "s" : ""} ready</p>
                     </div>
-                    <Button onClick={downloadAll} className="bg-emerald-600 hover:bg-emerald-700 text-white" data-testid="button-download-all">
-                      <Download className="mr-2 h-4 w-4" /> Download All
+                    <Button onClick={downloadAll} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold w-full sm:w-auto h-12 px-6 shadow-lg shadow-emerald-600/20 transition-all hover:scale-105">
+                      <Download className="mr-2 h-5 w-5" /> Download All ZIP
                     </Button>
                   </div>
                 </Card>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 bg-muted/20 p-4 rounded-xl border">
                   {results.map((r, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: i * 0.04 }}
-                      className="group relative rounded-lg overflow-hidden border bg-card cursor-pointer hover:border-primary/50 transition-colors"
+                      className="group relative rounded-xl overflow-hidden border-2 bg-card cursor-pointer hover:border-indigo-400 transition-all shadow-sm hover:shadow-md"
                       onClick={() => downloadOne(r)}
-                      data-testid={`image-result-${i}`}
                     >
-                      <img src={r.dataUrl} alt={r.name} className="w-full object-contain" loading="lazy" />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                        <Download className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="aspect-[1/1.414] bg-white relative">
+                        <img src={r.dataUrl} alt={r.name} className="w-full h-full object-contain p-2" loading="lazy" />
                       </div>
-                      <div className="p-2 text-xs text-center text-muted-foreground font-medium">{r.name}</div>
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-indigo-900/20 backdrop-blur-[1px] transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <Button variant="secondary" size="sm" className="font-bold shadow-lg">
+                          <Download className="h-4 w-4 mr-1.5" /> Save
+                        </Button>
+                      </div>
+                      <div className="p-2.5 text-xs text-center text-foreground font-bold border-t bg-muted/30">{r.name}</div>
                     </motion.div>
                   ))}
                 </div>
               </motion.div>
             ) : !isProcessing && (
-              <Button onClick={process} className="w-full h-12 text-base font-medium" data-testid="button-convert">
+              <Button onClick={process} className="w-full h-14 text-lg font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 text-white transition-all hover:scale-[1.01] mt-8">
                 Convert to Images
               </Button>
             )}

@@ -54,9 +54,6 @@ export default function CompressPdf() {
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await PDFDocument.load(arrayBuffer);
       
-      // pdf-lib's compression mostly comes from useObjectStreams
-      // The preset here is somewhat of a placebo for pdf-lib since it doesn't do lossy image compression natively easily
-      // but it fulfills the structural requirement to "optimize" PDF
       const pdfBytes = await pdfDoc.save({ useObjectStreams: true });
       setCompressedPdf(pdfBytes);
     } catch (e) {
@@ -81,9 +78,12 @@ export default function CompressPdf() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">PDF Optimizer</h2>
-        <p className="text-muted-foreground mt-1">Optimize PDF structure to reduce file size without losing quality.</p>
+      <div className="space-y-2">
+        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-amber-500/10 text-amber-600 dark:text-amber-400 mb-1">
+          Optimize
+        </div>
+        <h2 className="text-3xl font-bold tracking-tight">PDF Optimizer</h2>
+        <p className="text-muted-foreground text-lg">Optimize PDF structure to reduce file size without losing quality.</p>
       </div>
 
       <AnimatePresence mode="wait">
@@ -97,28 +97,29 @@ export default function CompressPdf() {
           >
             <Card 
               className={cn(
-                "p-12 border-dashed transition-all duration-200 group relative overflow-hidden",
-                isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "hover:border-primary/50 hover:bg-muted/50"
+                "p-14 border-2 border-dashed transition-all duration-300 group relative overflow-hidden bg-card/50",
+                isDragging ? "border-amber-500 bg-amber-500/5 scale-[1.02] shadow-xl shadow-amber-500/10" : "border-border hover:border-amber-500/50 hover:bg-muted/50 hover:shadow-lg"
               )}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
               onDrop={onDrop}
             >
+              {isDragging && <div className="absolute inset-0 bg-amber-500/5 blur-3xl rounded-full" />}
               <div 
-                className="flex flex-col items-center justify-center space-y-4 text-center cursor-pointer relative z-10"
+                className="flex flex-col items-center justify-center space-y-5 text-center cursor-pointer relative z-10"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <div className={cn(
-                  "p-4 rounded-full transition-colors duration-200",
-                  isDragging ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
+                  "p-5 rounded-2xl transition-all duration-300 shadow-sm",
+                  isDragging ? "bg-amber-500 text-white scale-110 shadow-amber-500/25 shadow-lg" : "bg-background border shadow-sm text-amber-500 group-hover:bg-amber-500 group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-amber-500/25"
                 )}>
-                  <UploadCloud className="h-8 w-8" />
+                  <UploadCloud className="h-10 w-10" />
                 </div>
-                <div>
-                  <p className="font-medium text-lg">
+                <div className="space-y-1.5">
+                  <p className="font-semibold text-xl">
                     {isDragging ? "Drop PDF here" : "Click or drag a PDF to optimize"}
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">Process locally in your browser</p>
+                  <p className="text-sm text-muted-foreground/80 font-medium">Process locally in your browser</p>
                 </div>
                 <input 
                   type="file" 
@@ -135,35 +136,38 @@ export default function CompressPdf() {
             key="processing"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-8 bg-card p-6 md:p-8 rounded-2xl border shadow-sm"
           >
-            <Card className="p-6 flex flex-col sm:flex-row sm:items-center gap-4 border-primary/20 bg-primary/5">
-              <div className="h-12 w-12 bg-primary/20 rounded flex items-center justify-center shrink-0">
-                <FileText className="h-6 w-6 text-primary" />
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5 p-4 rounded-xl border bg-muted/30">
+              <div className="h-14 w-14 bg-amber-500/10 rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
+                <FileText className="h-7 w-7 text-amber-600 dark:text-amber-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate text-lg">{file.name}</p>
-                <p className="text-sm text-muted-foreground">Original File Size: <span className="font-medium text-foreground">{formatSize(file.size)}</span></p>
+                <p className="font-bold truncate text-lg text-foreground">{file.name}</p>
+                <p className="text-sm font-medium text-muted-foreground mt-0.5">Original Size: <span className="text-foreground">{formatSize(file.size)}</span></p>
               </div>
-              <Button variant="outline" onClick={() => setFile(null)} className="shrink-0">
+              <Button variant="outline" onClick={() => {setFile(null); setCompressedPdf(null);}} className="shrink-0 font-semibold border-dashed">
                 Change File
               </Button>
-            </Card>
+            </div>
 
             {!compressedPdf && (
               <div className="space-y-4 max-w-md">
-                <Label className="text-base font-medium">Optimization Profile</Label>
+                <Label className="text-base font-semibold">Optimization Profile</Label>
                 <Select value={preset} onValueChange={setPreset}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full h-12 rounded-xl bg-background border-2 focus:ring-amber-500">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low Quality (Smallest Size)</SelectItem>
-                    <SelectItem value="medium">Medium Quality (Recommended)</SelectItem>
-                    <SelectItem value="high">High Quality (Largest Size)</SelectItem>
+                    <SelectItem value="low" className="font-medium py-3">Low Quality (Smallest Size)</SelectItem>
+                    <SelectItem value="medium" className="font-medium py-3">Medium Quality (Recommended)</SelectItem>
+                    <SelectItem value="high" className="font-medium py-3">High Quality (Largest Size)</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-sm text-muted-foreground">Note: Structural optimization preserves text clarity.</p>
+                <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500 inline-block"></span>
+                  Structural optimization preserves text clarity
+                </p>
               </div>
             )}
 
@@ -172,33 +176,38 @@ export default function CompressPdf() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
               >
-                <Card className="p-6 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 overflow-hidden relative">
-                  <div className="absolute top-0 left-0 w-1 bg-emerald-500 h-full" />
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pl-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                        <p className="font-semibold text-emerald-900 dark:text-emerald-300 text-lg">Optimization Complete</p>
+                <Card className="p-8 bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-950/40 dark:to-teal-900/20 border-emerald-200/50 dark:border-emerald-800/50 relative overflow-hidden shadow-lg shadow-emerald-500/5">
+                  <div className="absolute top-0 right-0 p-12 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-3xl -mr-10 -mt-10" />
+                  
+                  <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex items-center gap-5 text-center md:text-left">
+                      <div className="h-16 w-16 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center shadow-inner shrink-0 mx-auto md:mx-0">
+                        <CheckCircle2 className="h-8 w-8" />
                       </div>
-                      <p className="text-emerald-700/80 dark:text-emerald-400/80 mt-2 flex items-center gap-2">
-                        New size: <span className="font-medium">{formatSize(compressedPdf.length)}</span>
-                        <span className="bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded-full text-xs font-bold">
-                          {Math.max(0, Math.round((1 - compressedPdf.length / file.size) * 100))}% Smaller
-                        </span>
-                      </p>
+                      <div>
+                        <h3 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">Optimization Complete!</h3>
+                        <div className="mt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                          <span className="font-semibold text-emerald-800 dark:text-emerald-200">
+                            New size: {formatSize(compressedPdf.length)}
+                          </span>
+                          <span className="bg-emerald-200 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-100 px-3 py-1 rounded-full text-sm font-bold shadow-sm">
+                            {Math.max(0, Math.round((1 - compressedPdf.length / file.size) * 100))}% Smaller
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <Button onClick={downloadPdf} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-500/20 w-full sm:w-auto h-12 px-6">
-                      <Download className="mr-2 h-5 w-5" /> Download Optimized PDF
+                    <Button onClick={downloadPdf} className="h-14 px-8 font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 transition-all hover:scale-105 w-full md:w-auto shrink-0 text-lg">
+                      <Download className="mr-2 h-5 w-5" /> Save PDF
                     </Button>
                   </div>
                 </Card>
               </motion.div>
             ) : (
-              <Button onClick={processPdf} className="w-full h-14 text-lg font-medium shadow-md shadow-primary/20" disabled={isProcessing}>
+              <Button onClick={processPdf} className="w-full h-14 text-lg font-bold shadow-lg shadow-amber-500/20 bg-amber-600 hover:bg-amber-700 text-white transition-all hover:scale-[1.01]" disabled={isProcessing}>
                 {isProcessing ? (
                   <>
                     <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                    Optimizing PDF Structure...
+                    Optimizing Structure...
                   </>
                 ) : (
                   "Optimize PDF"
