@@ -78,6 +78,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
+    "html2canvas": "^1.4.1",
     "pdfjs-dist": "^6.1.200"
   }
 }

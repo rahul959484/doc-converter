@@ -16,6 +16,11 @@ import WatermarkPdf from "@/pages/watermark-pdf";
 import PageNumbersPdf from "@/pages/page-numbers-pdf";
 import OrganizePdf from "@/pages/organize-pdf";
 import PdfToImage from "@/pages/pdf-to-image";
+import HtmlToPdf from "@/pages/html-to-pdf";
+import UnlockPdf from "@/pages/unlock-pdf";
+import SignPdf from "@/pages/sign-pdf";
+import RepairPdf from "@/pages/repair-pdf";
+import RemovePages from "@/pages/remove-pages";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +40,11 @@ function Router() {
         <Route path="/page-numbers-pdf" component={PageNumbersPdf} />
         <Route path="/organize-pdf" component={OrganizePdf} />
         <Route path="/pdf-to-image" component={PdfToImage} />
+        <Route path="/html-to-pdf" component={HtmlToPdf} />
+        <Route path="/unlock-pdf" component={UnlockPdf} />
+        <Route path="/sign-pdf" component={SignPdf} />
+        <Route path="/repair-pdf" component={RepairPdf} />
+        <Route path="/remove-pages" component={RemovePages} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
