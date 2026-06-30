@@ -7,6 +7,13 @@ import Layout from "@/components/layout";
 import ImageToPdf from "@/pages/image-to-pdf";
 import CompressImage from "@/pages/compress-image";
 import CompressPdf from "@/pages/compress-pdf";
+import MergePdf from "@/pages/merge-pdf";
+import SplitPdf from "@/pages/split-pdf";
+import RotatePdf from "@/pages/rotate-pdf";
+import WatermarkPdf from "@/pages/watermark-pdf";
+import PageNumbersPdf from "@/pages/page-numbers-pdf";
+import OrganizePdf from "@/pages/organize-pdf";
+import PdfToImage from "@/pages/pdf-to-image";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +25,13 @@ function Router() {
         <Route path="/image-to-pdf" component={ImageToPdf} />
         <Route path="/compress-image" component={CompressImage} />
         <Route path="/compress-pdf" component={CompressPdf} />
+        <Route path="/merge-pdf" component={MergePdf} />
+        <Route path="/split-pdf" component={SplitPdf} />
+        <Route path="/rotate-pdf" component={RotatePdf} />
+        <Route path="/watermark-pdf" component={WatermarkPdf} />
+        <Route path="/page-numbers-pdf" component={PageNumbersPdf} />
+        <Route path="/organize-pdf" component={OrganizePdf} />
+        <Route path="/pdf-to-image" component={PdfToImage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
